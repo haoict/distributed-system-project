@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/D:/GitHub/ds-threadperrequest/src/ThreadPerRequestServer/ThreadPerRequestServer.java</file>
+            <file>file:/D:/GitHub/ds-threadperrequest/src/ThreadPerRequestServer/HandlerServer.java</file>
+            <file>file:/D:/GitHub/ds-threadperrequest/src/Client/ThreadPerRequestiClient.java</file>
+            <file>file:/D:/GitHub/ds-threadperrequest/src/Client/HandlerClient.java</file>
+            <file>file:/D:/GitHub/ds-threadperrequest/src/ThreadPerConnectionServer/ThreadPerConnectionServer.java</file>
+            <file>file:/D:/GitHub/ds-threadperrequest/test/Server.java</file>
+        </group>
+    </open-files>
+</project-private>
