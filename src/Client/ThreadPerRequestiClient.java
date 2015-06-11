@@ -12,7 +12,7 @@ package Client;
 public class ThreadPerRequestiClient {
 
     public static void main(String[] args) {
-        Thread[] t = new Thread[5];
+        Thread[] t = new Thread[10];
 
         for (int i = 0; i < t.length; i++) {
             t[i] = new HandlerClient("Thread-" + i, i+4);
