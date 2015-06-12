@@ -7,6 +7,7 @@ package ThreadPerConnection;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.*;
@@ -54,19 +55,24 @@ class HandlerServer extends Thread {
             System.out.println("Thread-" + index + " serves connection from " + socket.getInetAddress() + ":" + socket.getPort());
             
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String val = in.readLine();
-            long toCalculate = Long.parseLong(val);
-             
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            String val = in.readLine() ;
+            while (val != null) {
+                long toCalculate = Long.parseLong(val);
 
-            System.out.println("Thread-" + index + " is checking if " + toCalculate + " is prime");
-            boolean f = isPrime(toCalculate);
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-            System.out.println("Thread-" + index + " is sending result");
-            out.println("" + f);
-            System.out.println("----------------------------------------");
+                System.out.println("Thread-" + index + " is checking if " + toCalculate + " is prime");
+                boolean f = isPrime(toCalculate);
+
+                System.out.println("Thread-" + index + " is sending result");
+                out.println("" + f);
+                System.out.println("----------------------------------------");
+                val = in.readLine();
+            }
             
             //Step 3.3: Disconnect when finish
+            
+            socket.shutdownOutput(); // Sends the 'FIN' on the network
             socket.getOutputStream().close();
             socket.getInputStream().close();
             socket.close();

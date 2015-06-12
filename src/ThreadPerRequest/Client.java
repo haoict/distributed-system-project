@@ -3,15 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ThreadPerRequest;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 /**
  *
@@ -19,45 +18,62 @@ import java.nio.charset.Charset;
  */
 public class Client {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        int port = 4444;
-        SocketChannel channel = SocketChannel.open();
+    public static void main(String[] args) {
+        Thread[] t = new Thread[10];
 
-        // we open this channel in non blocking mode
-        channel.configureBlocking(false);
-        channel.connect(new InetSocketAddress("localhost", port));
-
-        while (!channel.finishConnect()) {
-            // System.out.println("still connecting");
-        }
-                
-        int toCalculate = 2;
-        
-        for (int i = 1; i < 10; i++) {
-            // create new request/write some data into the channel
-            CharBuffer buffer = CharBuffer.wrap(String.valueOf(toCalculate));
-            while (buffer.hasRemaining()) {
-                channel.write(Charset.defaultCharset().encode(buffer));
+        for (int i = 0; i < t.length; i++) {
+            t[i] = new HandlerClient("Thread-" + i, i+4);
+            t[i].start();
+            try {
+                Thread.sleep(1000);
+            } 
+            catch (InterruptedException ie) {
             }
-            Thread.sleep(1000);
-            
-            // see if any message has been received
-            ByteBuffer bufferA = ByteBuffer.allocate(127);
-            int count = 0;
-            String message = "";
-            while ((count = channel.read(bufferA)) > 0) {
-                // flip the buffer to start reading
-                bufferA.flip();
-                message += Charset.defaultCharset().decode(bufferA);
-            }
-            
-            System.out.print("is " +  toCalculate + " a prime?: ");
-            if (message.length() > 0) {
-                System.out.print(message);
-                message = "";
-            }
-            toCalculate++;
-            System.out.print("\n");
         }
     }
 }
+
+class HandlerClient extends Thread {
+
+    private String name;
+    private long toCalculate; 
+
+    public HandlerClient() {
+        this.toCalculate = 45;
+    }
+
+    public HandlerClient(String name) {
+        this.name = name;
+        this.toCalculate = 45;
+    }
+    
+    public HandlerClient(String name, long toCalculate) {
+        this.name = name;
+        this.toCalculate = toCalculate;
+    }
+
+    @Override
+    public void run() {
+        try {
+            try (Socket socket = new Socket("127.0.0.1", 9999)) {
+                System.out.println(name + " connect on port " + socket.getLocalPort() + "/IP:" + socket.getInetAddress());
+                
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                out.println("" + toCalculate);
+            
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                        socket.getInputStream()));
+                
+                String val = in.readLine();
+                System.out.println("Is " + toCalculate + " a prime? " + val);
+                
+                socket.close(); // Now we can close the Socket
+                System.out.println(name + " is closed: " + socket.isClosed());              
+                
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+}
+
